@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Okazja Pepper</title>
+    
+    <script src='//libtl.com/sdk.js' data-zone='10922235' data-sdk='show_10922235'></script>
+
+    <style>
+        body { font-family: sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 85%; text-align: center; }
+        .btn { background-color: #ff4400; color: white; padding: 16px 32px; border-radius: 10px; font-weight: bold; cursor: pointer; display: inline-block; margin-top: 20px; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Okazja jest gotowa! 🔥</h2>
+    <p>Kliknij przycisk, aby odebrać link.</p>
+    <div id="ad-button" class="btn">ODBLOKUJ I PRZEJDŹ 🔓</div>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const pepperUrl = decodeURIComponent(urlParams.get('url'));
+
+    document.getElementById('ad-button').addEventListener('click', function() {
+        if (!pepperUrl || pepperUrl === 'null') {
+            alert('Błąd linku!');
+            return;
+        }
+
+        // 1. PRÓBA: REWARDED POPUP (Najszybsza kasa)
+        show_10922235('pop').then(() => {
+            window.location.href = pepperUrl;
+        }).catch(() => {
+            // 2. PRÓBA: REWARDED INTERSTITIAL
+            show_10922235().then(() => {
+                window.location.href = pepperUrl;
+            }).catch(() => {
+                // 3. PRÓBA: TWOJE USTAWIENIA IN-APP (Wymuszenie)
+                show_10922235({
+                    type: 'inApp',
+                    inAppSettings: {
+                        frequency: 2,
+                        capping: 0.1,
+                        interval: 30,
+                        timeout: 0, // Zmienione na 0, żeby pokazał od razu przy błędzie innych
+                        everyPage: true
+                    }
+                });
+                // Po krótkiej chwili i tak przekierowujemy, żeby nie zniechęcać usera
+                setTimeout(() => { window.location.href = pepperUrl; }, 1500);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
